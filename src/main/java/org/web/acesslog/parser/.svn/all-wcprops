@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/!svn/ver/10/trunk/src/org/web/acesslog/parser
+END
+ApacheParserImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/!svn/ver/10/trunk/src/org/web/acesslog/parser/ApacheParserImpl.java
+END
+IParser.java
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/10/trunk/src/org/web/acesslog/parser/IParser.java
+END
