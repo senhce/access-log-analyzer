@@ -1,13 +1,11 @@
-# web-log-analyzer
-"Analyze web logs" - Calculate throughput and performance of web components
+# access-log-analyzer
+"Analyze web access logs" - Calculate throughput and performance of web components
 
 Simple Utility to analyze your web access log to help you identify potential traffic, response times (min/max/avg), most used URL's etc.
 
 Download the web-log-analyzer.jar & web-log-analyzer.sh from downloads link. Execute web-log-analyzer.sh the script with appropriate arguments as detailed out below.
 
 Currently supported web servers - Tomcat, Apache, JBoss
-
-http://code.google.com/p/web-log-analyzer/downloads/list'>Download
 
 web-log-analyzer.sh:
 
