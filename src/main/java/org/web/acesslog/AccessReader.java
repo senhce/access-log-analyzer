@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,19 +28,15 @@ import org.web.report.IReport;
 public class AccessReader {
 	
 	/**
-	 * 
+	 * Default TestReport
 	 */
-	public static IParser formatter = null;
+	public IParser formatter = new ApacheParserImpl();
 
 	/**
 	 * 
 	 */
-	public static IReport report = null;
+	public IReport report = null;
 	
-	/**
-	 * 
-	 */
-	String line = "Time Taken: 0.034 10.50.76.140 - - [21/Jul/2011:17:28:02 -0400] \"POST /sample/web/home/null HTTP/1.1\" 200 2049";
 
 	/**
 	 * Main method.
@@ -48,6 +45,7 @@ public class AccessReader {
 	 * @throws IOException 
 	 */
 	public static void main(String[] args) throws Exception {
+		AccessReader reader = new AccessReader();
 		System.out.println("######### Access Log Reader Started #############\n");
 		if(args==null || args.length < 5){
 			System.out.println("Ex: \"Time Taken: %T %h %l %u %t %r %s %b\" org.web.acesslog.parser.ApacheParserImpl org.web.report.TextReport \".html,.xhtml,.jsp,ajax,service\" C:\\sen\\access.log");
@@ -70,8 +68,9 @@ public class AccessReader {
 			Class formatterClazz;
 			try {
 				formatterClazz = Class.forName(formatterClassStr);
-				formatter = (IParser) formatterClazz.newInstance();
-				formatter.setFormat(format);
+				IParser parser = (IParser) formatterClazz.newInstance();
+				parser.setFormat(format);
+				reader.setFormatter(parser);
 			} catch (Exception e) {
 				System.err.println("Error: Couldn't instanitate formatter class, check the input - "+formatterClassStr);
 				System.exit(0);
@@ -86,7 +85,7 @@ public class AccessReader {
 			Class reportClazz;
 			try {
 				reportClazz = Class.forName(reportClassStr);
-				report = (IReport) reportClazz.newInstance();
+				reader.setReport((IReport) reportClazz.newInstance());
 			} catch (Exception e) {
 				System.err.println("Error: Couldn't instanitate report class, check the input - "+reportClassStr);
 				System.exit(0);
@@ -103,13 +102,16 @@ public class AccessReader {
 			System.exit(0);
 		}
 		// Read/Parser logic
-		List<Access> accessList = read(fileName,includeExtn);
+		File file = new File(fileName);
+		Reader readerIO = new FileReader(fileName);
+		List<Access> accessList = reader.read(readerIO,includeExtn);
 		// Stats computation Logic
 		Map<String, Stat> stats = calcStats(accessList);
 		// Generate Report
-		report.generate(stats);
-		// Yet to be implemented
-		// writeCSVStats();
+		reader.getReport().generate(stats);
+		
+		if(readerIO != null)
+			readerIO.close();
 		System.out.println("\n######### Access Log Reader Exited #############");
 	}
 
@@ -144,18 +146,13 @@ public class AccessReader {
 	 * @param fileName
 	 * @return
 	 */
-	public static List<Access> read(String fileName, String ignoreExt) {
+	public List<Access> read(Reader reader, String ignoreExt) {
 		List<Access> accessList = new ArrayList<Access>();
-		File file = null;
-		FileReader fileReader = null;
 		BufferedReader buffReader = null;
 		try {
-			file = new File(fileName);
-			fileReader = new FileReader(file);
-			buffReader = new BufferedReader(fileReader);
+			buffReader = new BufferedReader(reader);
 			String line = buffReader.readLine();
 			while (line != null) {
-				//System.out.println(line);
 				Access access = formatter.parse(line, ignoreExt);
 				if(access!=null)
 				accessList.add(access);
@@ -165,13 +162,6 @@ public class AccessReader {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			if (fileReader != null) {
-				try {
-					fileReader.close();
-				} catch (IOException e) {
-					// suppressed
-				}
-			}
 			if (buffReader != null) {
 				try {
 					buffReader.close();
@@ -182,4 +172,21 @@ public class AccessReader {
 		}
 		return accessList;
 	}
+
+	public IParser getFormatter() {
+		return formatter;
+	}
+
+	public void setFormatter(IParser formatter) {
+		this.formatter = formatter;
+	}
+
+	public IReport getReport() {
+		return report;
+	}
+
+	public  void setReport(IReport report) {
+		this.report = report;
+	}
+	
 }

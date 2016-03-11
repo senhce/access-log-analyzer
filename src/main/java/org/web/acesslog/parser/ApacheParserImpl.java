@@ -69,7 +69,7 @@ public class ApacheParserImpl implements IParser {
 		StringTokenizer tokenizer = new StringTokenizer(format, delimiter);
 		while (tokenizer.hasMoreTokens()) {
 			String token = tokenizer.nextToken();
-			// System.out.println(token);
+			//System.out.println("Token  : " + token);
 			this.formatLst.add(token);
 		}
 	}
@@ -88,7 +88,7 @@ public class ApacheParserImpl implements IParser {
 		while (formatItr.hasNext()) {
 			while (tokenizer.hasMoreTokens()) {
 				String token = tokenizer.nextToken();
-				//System.out.println(token);
+				System.out.println(format+ " : "+ token);
 				String format = formatItr.next();
 				if ("%a".equals(format)) {
 					access.setRemoteIpAddr(token);
@@ -115,8 +115,10 @@ public class ApacheParserImpl implements IParser {
 					if(url.contains("?")){
 						url = url.substring(0, url.indexOf("?"));
 						access.setFirstLineOfRequest(url);
+						access.setRequestedUrlPath(url);
 					}else{
-						access.setFirstLineOfRequest(url);	
+						access.setFirstLineOfRequest(url);
+						access.setRequestedUrlPath(url);
 					}
 					if(includeExtn==null || NONE.equalsIgnoreCase(includeExtn)){
 						//Do nothing.
